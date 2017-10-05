@@ -1,0 +1,27 @@
+create proc DeleteLOGbyCount
+As  --delete old data by number of count 
+--
+declare @number int,@threshold int,@endNum int,@startNum int,@text varchar(8)
+set @number =(select count(1) from WebErrorLog.dbo.Error500) --get number of count now
+set @threshold=1500000  -- make Threshold
+set @endNum=@number-@threshold  --  how many need delete  
+set @startNum=0  -- start from    
+
+if @number >= @threshold --if vol of log over 
+begin
+while(@startNum<@endNum)
+begin tran
+delete  WebErrorLog.dbo.Error500 -- delete 20 each time untill condition are check 
+where eID in(select top(20) eID from WebErrorLog.dbo.error500 order by eid )
+set @startNum=@startNum+20 --count+20
+commit
+end
+else
+set @text='Din't need'
+   select @text output
+   
+go
+
+--select  ROW_NUMBER ()  over(order by eid) as SN ,eID from WebErrorLog.dbo.Error500 
+--go
+
