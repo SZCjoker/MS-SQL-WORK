@@ -1,0 +1,35 @@
+
+  create proc DeloldDeatil 
+  as  --delete last three month log data from Proc start date
+ --- 
+  declare @x datetime,
+          @y varchar(4),
+          @m varchar(2), 
+		  @deadline datetime
+  select @x = (select convert (char(8),GETDATE(),112))
+ -- select @x  --proc start date
+  select @y =(select convert(char(4),  year(@x),112)) 
+  --select @y year
+  select @m=((select convert(char(4),  month(@x),112))-3)
+  --select @m month
+  select @deadline=(select @y+'0'+@m+'01')
+  --select @deadline d-- 
+  ---set while need  
+  declare @_max datetime,@_start datetime,@_each int
+  set @_max=@x --proc start date
+  set @_start=@deadline--deadline
+  
+  while(@_start<@_max)
+  begin
+  --
+  delete FROM [WebErrorLog].[dbo].[Error500]
+  where CreateDate=@_start 
+
+  set @_start=@_start+5 --count
+  end
+  go
+
+
+
+
+ 
